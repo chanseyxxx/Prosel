@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const SearchBar = ({ onSearch, onClear }) => {
+interface SearchBarProps {
+  onSearch: (text: string) => void;
+  onClear: () => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onClear }) => {
   const [termoBusca, setTermoBusca] = useState('');
 
-  const handleChangeText = (text) => {
+  const handleChangeText = (text: string) => {
     setTermoBusca(text);
     onSearch(text); // Chama a função de busca passada como prop
   };
@@ -16,9 +22,11 @@ const SearchBar = ({ onSearch, onClear }) => {
 
   return (
     <View style={styles.container}>
+      <Ionicons name="search" size={20} color="#000" style={styles.icon} />
       <TextInput
         style={styles.input}
-        placeholder="Digite sua busca"
+        placeholder="Filter by name...."
+        placeholderTextColor="#666"
         value={termoBusca}
         onChangeText={handleChangeText}
         clearButtonMode="while-editing"
@@ -29,14 +37,29 @@ const SearchBar = ({ onSearch, onClear }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f0f0f0',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
     padding: 10,
     marginBottom: 10,
-    borderRadius: 5,
+    borderRadius: 8,
+    borderColor: '#000000',
+    borderWidth: 1,
+    opacity: 0.6, // Define 50% de opacidade para o contêiner
+    width: 312,
+    height: 56,
+    justifyContent: 'center',
+
+  },
+  icon: {
+    marginRight: 10,
+    opacity: 0.6, // Define 50% de opacidade para o ícone
   },
   input: {
     fontSize: 16,
-    paddingHorizontal: 10,
+    flex: 1,
+    color: '#000',
+    
   },
 });
 

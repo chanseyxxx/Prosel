@@ -12,22 +12,21 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
+        tabBarShowLabel: false, // Oculta o nome da aba
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="home-outline" color={color} /> // Ícone de casa não preenchido
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="Favorites"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="heart-outline" color={color} /> // Ícone de coração não preenchido
           ),
         }}
       />

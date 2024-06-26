@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import AppBar from '@/components/AppBar';
 import SearchBar from '@/components/SearchBar';
+import CharacterDetails from '@/components/CharacterDetails';
 
 type Character = {
   id: number;
@@ -13,7 +14,17 @@ type Character = {
   image: string;
   status: string;
   gender: string;
+  type: string;
+  origin: {
+    name: string;
+    url: string;
+  };
+  location: {
+    name: string;
+    url: string;
+  };
 };
+
 
 const FavoritosScreen: React.FC = () => {
   const [todosPersonagens, setTodosPersonagens] = useState<Character[]>([]);
@@ -66,6 +77,11 @@ const FavoritosScreen: React.FC = () => {
   };
 
   const toggleFavorito = async (id: number) => {
+    // Impedir de desmarcar como favorito
+    if (favoritos[id]) {
+      return;
+    }
+
     const novosFavoritos = { ...favoritos };
     novosFavoritos[id] = !novosFavoritos[id];
     setFavoritos(novosFavoritos);
@@ -104,23 +120,30 @@ const FavoritosScreen: React.FC = () => {
     setPersonagemSelecionado(character);
   };
 
+  const hideCharacterDetails = () => {
+    setPersonagemSelecionado(null);
+  };
+
   const renderItem = ({ item }: { item: Character }) => (
     <TouchableOpacity onPress={() => showCharacterDetails(item)}>
       <View style={styles.card}>
         <Image source={{ uri: item.image }} style={styles.imagem} resizeMode="cover" />
         <View style={styles.infoContainer}>
-          <View style={styles.rowContainer}>
+          <View style={styles.textContainer}>
             <Text style={styles.nome}>{item.name}</Text>
-            <TouchableOpacity onPress={() => toggleFavorito(item.id)}>
-              <Ionicons
-                name={favoritos[item.id] ? 'heart' : 'heart-outline'}
-                size={24}
-                color={favoritos[item.id] ? 'red' : 'black'}
-                style={{ marginLeft: 10 }}
-              />
-            </TouchableOpacity>
+            <Text style={styles.info}>{item.species}</Text>
           </View>
-          <Text style={styles.info}>{item.species}</Text>
+          <TouchableOpacity
+            onPress={() => toggleFavorito(item.id)}
+            style={[styles.heartIcon, favoritos[item.id] && styles.disabledHeartIcon]}
+            disabled={favoritos[item.id]} // Desabilita o ícone quando favoritado
+          >
+            <Ionicons
+              name={favoritos[item.id] ? 'heart' : 'heart-outline'}
+              size={25}
+              color={favoritos[item.id] ? 'red' : 'black'}
+            />
+          </TouchableOpacity>
         </View>
       </View>
     </TouchableOpacity>
@@ -129,33 +152,26 @@ const FavoritosScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <AppBar />
-      <Text style={styles.titulo}>Personagens Favoritos</Text>
-      <SearchBar onSearch={handleSearch} onClear={resetSearch} />
-      
-      {personagemSelecionado ? (
+      <View style={styles.searchBarContainer}>
+        <SearchBar onSearch={handleSearch} onClear={resetSearch} />
+      </View>
+
+      {personagemSelecionado && (
         <View style={styles.detailContainer}>
-          <TouchableOpacity onPress={() => setPersonagemSelecionado(null)} style={styles.closeButton}>
+          <TouchableOpacity onPress={hideCharacterDetails} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Fechar Detalhes</Text>
           </TouchableOpacity>
-          <View style={styles.detailContent}>
-            <Image source={{ uri: personagemSelecionado.image }} style={styles.detailImage} resizeMode="cover" />
-            <View style={styles.infoContainer}>
-              <Text style={styles.nome}>{personagemSelecionado.name}</Text>
-              <Text style={styles.info}>{personagemSelecionado.status}</Text>
-              <Text style={styles.info}>{personagemSelecionado.gender}</Text>
-              <Text style={styles.info}>{personagemSelecionado.species}</Text>
-            </View>
-          </View>
+          <CharacterDetails character={personagemSelecionado} onClose={hideCharacterDetails} />
         </View>
-      ) : (
-        <FlatList
-          data={todosPersonagens}
-          renderItem={renderItem}
-          keyExtractor={(item) => `${item.id}`}
-          contentContainerStyle={styles.contentContainer}
-          ListEmptyComponent={<Text style={styles.emptyMessage}>Nenhum personagem favoritado.</Text>}
-        />
       )}
+
+      <FlatList
+        data={todosPersonagens}
+        renderItem={renderItem}
+        keyExtractor={(item) => `${item.id}`}
+        contentContainerStyle={styles.contentContainer}
+        ListEmptyComponent={<Text>Nenhum personagem favoritado.</Text>}
+      />
     </View>
   );
 };
@@ -166,67 +182,70 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  titulo: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
-  },
-  card: {
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
-    flexDirection: 'row',
-  },
-  imagem: {
-    width: 120,
-    height: 120,
-    borderRadius: 5,
-  },
-  infoContainer: {
-    marginLeft: 10,
-    justifyContent: 'center',
-  },
-  rowContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
   },
+  searchBarContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 30,
+    marginBottom: 20,
+  },
+  card: {
+    backgroundColor: '#ffffff',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 4,
+    alignItems: 'center',
+    width: 312,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    justifyContent: 'center',
+  },
+  imagem: {
+    width: 312,
+    height: 288,
+    borderRadius: 4,
+  },
+  infoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+  },
+  textContainer: {
+    flex: 1,
+  },
   nome: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   info: {
-    fontSize: 16,
+    fontSize: 14,
+  },
+  heartIcon: {
+    marginLeft: 5,
+  },
+  disabledHeartIcon: {
+    opacity: 0.5, // Opacidade reduzida para indicar que está desabilitado
+  },
+  loader: {
+    marginTop: 10,
+    alignItems: 'center',
   },
   contentContainer: {
     paddingHorizontal: 10,
   },
-  emptyMessage: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 18,
-  },
   detailContainer: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    zIndex: 100,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  detailContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 20,
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    borderRadius: 5,
-  },
-  detailImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 5,
   },
   closeButton: {
     position: 'absolute',

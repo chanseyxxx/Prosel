@@ -25,7 +25,6 @@ type Character = {
   };
 };
 
-
 const FavoritosScreen: React.FC = () => {
   const [todosPersonagens, setTodosPersonagens] = useState<Character[]>([]);
   const [favoritos, setFavoritos] = useState<{ [key: number]: boolean }>({});
@@ -94,18 +93,25 @@ const FavoritosScreen: React.FC = () => {
   };
 
   const realizarBusca = async (termo: string) => {
+    if (termo === '') {
+      carregarPersonagensFavoritos();
+      return;
+    }
+
     setCarregando(true);
 
     try {
       const response = await fetch(`https://rickandmortyapi.com/api/character/?name=${termo}`);
       if (!response.ok) {
-        throw new Error('Erro ao buscar os dados');
+        setTodosPersonagens([]);
+        return;
       }
       const data = await response.json();
       const personagensFiltrados = data.results.filter((personagem: Character) => favoritos[personagem.id]);
       setTodosPersonagens(personagensFiltrados);
     } catch (error) {
       console.error('Erro na busca:', error);
+      setTodosPersonagens([]);
     } finally {
       setCarregando(false);
     }
@@ -170,7 +176,7 @@ const FavoritosScreen: React.FC = () => {
         renderItem={renderItem}
         keyExtractor={(item) => `${item.id}`}
         contentContainerStyle={styles.contentContainer}
-        ListEmptyComponent={<Text>Nenhum personagem favoritado.</Text>}
+        ListEmptyComponent={<Text>Nenhum personagem encontrado ou favoritado.</Text>}
       />
     </View>
   );

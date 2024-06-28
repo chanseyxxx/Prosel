@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppBar from '@/components/AppBar';
 import SearchBar from '@/components/SearchBar';
-import CharacterDetails from '@/components/CharacterDetails'; // Importe o novo componente de detalhes
+import CharacterDetails from '@/components/CharacterDetails';
 
 type Character = {
   id: number;
@@ -24,7 +24,6 @@ type Character = {
   };
 };
 
-
 const HomeScreen: React.FC = () => {
   const [todosPersonagens, setTodosPersonagens] = useState<Character[]>([]);
   const [personagemSelecionado, setPersonagemSelecionado] = useState<Character | null>(null);
@@ -34,7 +33,7 @@ const HomeScreen: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const [favoritos, setFavoritos] = useState<{ [key: number]: boolean }>({});
   const [favoritosCarregados, setFavoritosCarregados] = useState(false);
-  const opacity = useState(new Animated.Value(0))[0]; // Estado para controlar a opacidade
+  const opacity = useState(new Animated.Value(0))[0];
   let timeout: NodeJS.Timeout | null = null;
 
   useEffect(() => {
@@ -92,14 +91,14 @@ const HomeScreen: React.FC = () => {
 
   const realizarBusca = async (termo: string) => {
     setCarregando(true);
-  
+
     try {
       const response = await fetch(`https://rickandmortyapi.com/api/character/?name=${termo}`);
       if (!response.ok) {
         throw new Error('Erro ao buscar os dados');
       }
       const data = await response.json();
-  
+
       if (data.error) {
         setTodosPersonagens([]);
       } else {
@@ -111,9 +110,12 @@ const HomeScreen: React.FC = () => {
       setCarregando(false);
     }
   };
-  
+
   const resetSearch = () => {
     setTermoBusca('');
+    setPaginaAtual(1);  // Reiniciar a página atual ao limpar a busca
+    setTodosPersonagens([]);
+    setHasMore(true);
     carregarPersonagens();
   };
 
@@ -215,9 +217,7 @@ const HomeScreen: React.FC = () => {
         <SearchBar onSearch={handleSearch} onClear={resetSearch} />
       </View>
 
-      {todosPersonagens.length === 0 ? (
-        renderEmpty()
-      ) : (
+      {termoBusca === '' ? (
         <FlatList
           data={todosPersonagens}
           renderItem={renderItem}
@@ -225,6 +225,14 @@ const HomeScreen: React.FC = () => {
           onEndReached={carregarPersonagens}
           onEndReachedThreshold={0.1}
           ListFooterComponent={renderFooter}
+          contentContainerStyle={styles.contentContainer}
+        />
+      ) : (
+        <FlatList
+          data={todosPersonagens}
+          renderItem={renderItem}
+          keyExtractor={(item) => `${item.id}`}
+          ListEmptyComponent={renderEmpty}
           contentContainerStyle={styles.contentContainer}
         />
       )}
@@ -280,7 +288,6 @@ const styles = StyleSheet.create({
   imagem: {
     width: 312,
     height: 288,
-    
   },
   infoContainer: {
     flexDirection: 'row',
@@ -298,31 +305,33 @@ const styles = StyleSheet.create({
   info: {
     fontSize: 14,
   },
-    emptyContainer: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    emptyText: {
-      fontSize: 16,
-      color: '#888',
-    },
-    heartIcon: {
-      marginLeft: 5,
-    },
-    loader: {
-      marginTop: 10,
-      alignItems: 'center',
-    },
-    contentContainer: {
-      paddingHorizontal: 10,
-    },
-    detailContainer: {
-      ...StyleSheet.absoluteFillObject,
-      backgroundColor: 'rgba(255, 255, 255, 1)',
-      zIndex: 100,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  });
-  
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#888',
+  },
+  heartIcon: {
+    marginLeft: 5,
+  },
+  loader: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  contentContainer: {
+    paddingHorizontal: 10,
+  },
+  detailContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+    zIndex: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
+
+ 

@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AppBar from '@/components/AppBar';
 
 interface CharacterDetailsProps {
   character: {
@@ -27,41 +28,43 @@ const CharacterDetails: React.FC<CharacterDetailsProps> = ({ character, onClose 
 
   return (
     <View style={[StyleSheet.absoluteFillObject, styles.container]}>
+      <AppBar />
       <TouchableOpacity onPress={onClose} style={styles.closeButton}>
         <Icon name="arrow-back" size={20} color="#000" />
         <Text style={styles.closeButtonText}>GO BACK</Text>
       </TouchableOpacity>
-      <View style={styles.detailContent}>
-        <Image source={{ uri: character.image }} style={styles.detailImage} resizeMode="cover" />
-        <View style={styles.infoContainer}>
-          <Text style={styles.name}>{character.name}</Text>
-          <Text style={styles.infomation}>Informations</Text>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.detailContent}>
+          <Image source={{ uri: character.image }} style={styles.detailImage} resizeMode="cover" />
+          <View style={styles.infoContainer}>
+            <Text style={styles.name}>{character.name}</Text>
+            <Text style={styles.infomation}>Informations</Text>
 
-          <Text style={styles.title}>Gender</Text>
-          <Text style={styles.text}>{getCharacterDetail(character.gender)}</Text>
-          <View style={styles.divider} />
+            <Text style={styles.title}>Gender</Text>
+            <Text style={styles.text}>{getCharacterDetail(character.gender)}</Text>
+            <View style={styles.divider} />
 
-          <Text style={styles.title}>Status</Text>
-          <Text style={styles.text}>{getCharacterDetail(character.status)}</Text>
-          <View style={styles.divider} />
+            <Text style={styles.title}>Status</Text>
+            <Text style={styles.text}>{getCharacterDetail(character.status)}</Text>
+            <View style={styles.divider} />
 
-          <Text style={styles.title}>Specie</Text>
-          <Text style={styles.text}>{getCharacterDetail(character.species)}</Text>
-          <View style={styles.divider} />
+            <Text style={styles.title}>Specie</Text>
+            <Text style={styles.text}>{getCharacterDetail(character.species)}</Text>
+            <View style={styles.divider} />
 
+            <Text style={styles.title}>Origin</Text>
+            <Text style={styles.text}>{getCharacterDetail(character.origin.name)}</Text>
+            <View style={styles.divider} />
 
-          <Text style={styles.title}>Origin</Text>
-          <Text style={styles.text}>{getCharacterDetail(character.origin.name)}</Text>
-          <View style={styles.divider} />
-
-          <Text style={styles.title}>Type</Text>
-          <Text style={styles.text}>{getCharacterDetail(character.type)}</Text>
-          <View style={styles.divider} />
-          
-          <Text style={styles.title}>Location</Text>
-          <Text style={styles.text}>{getCharacterDetail(character.location.name)}</Text>
+            <Text style={styles.title}>Type</Text>
+            <Text style={styles.text}>{getCharacterDetail(character.type)}</Text>
+            <View style={styles.divider} />
+            
+            <Text style={styles.title}>Location</Text>
+            <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">{getCharacterDetail(character.location.name)}</Text>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -69,13 +72,16 @@ const CharacterDetails: React.FC<CharacterDetailsProps> = ({ character, onClose 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    width: '100%',
+  },
+  scrollContent: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
   detailContent: {
     alignItems: 'center',
-    marginTop: 20,
     padding: 10,
     borderRadius: 5,
   },
@@ -105,14 +111,11 @@ const styles = StyleSheet.create({
     color: '#6E798C',
   },
   closeButton: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
+    marginTop: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
     backgroundColor: '#fff',
-    borderRadius: 5,
+    paddingLeft:25,
   },
   closeButtonText: {
     fontSize: 16,

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, FlatList, ActivityIndicator, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 import AppBar from '@/components/AppBar';
 import SearchBar from '@/components/SearchBar';
 import CharacterDetails from '@/components/CharacterDetails';
@@ -54,6 +55,12 @@ const HomeScreen: React.FC = () => {
       salvarFavoritos();
     }
   }, [favoritos]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      carregarFavoritos();
+    }, [])
+  );
 
   const carregarPersonagens = async () => {
     if (carregando || !hasMore) return;
@@ -332,6 +339,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-
- 

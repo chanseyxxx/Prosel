@@ -76,11 +76,6 @@ const FavoritosScreen: React.FC = () => {
   };
 
   const toggleFavorito = async (id: number) => {
-    // Impedir de desmarcar como favorito
-    if (favoritos[id]) {
-      return;
-    }
-
     const novosFavoritos = { ...favoritos };
     novosFavoritos[id] = !novosFavoritos[id];
     setFavoritos(novosFavoritos);
@@ -139,11 +134,7 @@ const FavoritosScreen: React.FC = () => {
             <Text style={styles.nome}>{item.name}</Text>
             <Text style={styles.info}>{item.species}</Text>
           </View>
-          <TouchableOpacity
-            onPress={() => toggleFavorito(item.id)}
-            style={[styles.heartIcon, favoritos[item.id] && styles.disabledHeartIcon]}
-            disabled={favoritos[item.id]} // Desabilita o ícone quando favoritado
-          >
+          <TouchableOpacity onPress={() => toggleFavorito(item.id)} style={styles.heartIcon}>
             <Ionicons
               name={favoritos[item.id] ? 'heart' : 'heart-outline'}
               size={25}
@@ -235,9 +226,6 @@ const styles = StyleSheet.create({
   },
   heartIcon: {
     marginLeft: 5,
-  },
-  disabledHeartIcon: {
-    opacity: 0.5, // Opacidade reduzida para indicar que está desabilitado
   },
   loader: {
     marginTop: 10,
